@@ -1,19 +1,197 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1020" />
   <title>GitHub Profile Finder</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <h1>GitHub Profile Finder</h1>
-    <input type="text" id="username" placeholder="Enter GitHub username" />
-    <button onclick="getProfile()">Search</button>
-    <div id="profile"></div>
-  </div>
-  <button id="toggleMode">🌙</button>
-  <script src="script.js"></script>
+  <div class="background-glow glow-one"></div>
+  <div class="background-glow glow-two"></div>
+
+  <header class="topbar">
+    <a href="#" class="brand" aria-label="GitHub Profile Finder home">
+      <span class="brand-icon">GH</span>
+      <span>Dev<span class="accent">Lens</span></span>
+    </a>
+
+    <button id="toggleMode" class="theme-toggle"
+      type="button" aria-label="Switch to light mode"
+      title="Toggle theme">☀️</button>
+  </header>
+
+  <main class="main-content">
+    <section class="hero">
+      <div class="eyebrow">
+        <span class="status-dot"></span>
+        GITHUB PROFILE EXPLORER
+      </div>
+
+      <h1>Discover the developer<br />
+        <span class="gradient-text">behind the code.</span>
+      </h1>
+
+      <p class="hero-description">
+        Explore GitHub profiles, discover standout repositories,
+        and get a glimpse into a developer's recent public activity.
+      </p>
+
+      <form id="searchForm" class="search-bar">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          type="text"
+          id="username"
+          placeholder="Enter a GitHub username..."
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          aria-label="GitHub username"
+          required
+        />
+        <button id="searchButton" type="submit">
+          <span>Search</span>
+          <span aria-hidden="true">↗</span>
+        </button>
+      </form>
+
+      <p class="search-hint">
+        Try a username like <button class="example-user"
+          type="button" data-username="torvalds">torvalds</button>
+        or <button class="example-user" type="button"
+          data-username="gaearon">gaearon</button>
+      </p>
+
+      <div id="message" class="message" role="status"
+        aria-live="polite" hidden></div>
+    </section>
+
+    <section id="results" class="results" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">DEVELOPER OVERVIEW</p>
+          <h2>Profile insights</h2>
+        </div>
+        <a id="profileLink" class="outline-link"
+          href="#" target="_blank" rel="noopener noreferrer">
+          View on GitHub ↗
+        </a>
+      </div>
+
+      <article class="profile-card">
+        <div class="profile-main">
+          <img id="avatar" class="avatar" src=""
+            alt="GitHub profile avatar" />
+
+          <div class="profile-identity">
+            <h2 id="displayName">Developer</h2>
+            <a id="login" class="username-link"
+              href="#" target="_blank" rel="noopener noreferrer"></a>
+            <p id="bio" class="bio"></p>
+
+            <div class="profile-meta">
+              <span id="location" hidden>📍 <span></span></span>
+              <a id="blog" href="#" target="_blank"
+                rel="noopener noreferrer" hidden>🔗 Website</a>
+              <span id="joined">📅 Joined —</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-footer">
+          <span class="public-badge">
+            <span class="status-dot"></span> Public profile
+          </span>
+          <a id="company" class="company-link" href="#"
+            hidden></a>
+        </div>
+      </article>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Repositories</span>
+            <span class="stat-icon purple">⌘</span>
+          </div>
+          <p id="repoCount" class="stat-value">—</p>
+          <p class="stat-caption">Public projects</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Followers</span>
+            <span class="stat-icon blue">♙</span>
+          </div>
+          <p id="followers" class="stat-value">—</p>
+          <p class="stat-caption">Developer community</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Following</span>
+            <span class="stat-icon pink">♡</span>
+          </div>
+          <p id="following" class="stat-value">—</p>
+          <p class="stat-caption">Accounts followed</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Public gists</span>
+            <span class="stat-icon orange">▤</span>
+          </div>
+          <p id="gistCount" class="stat-value">—</p>
+          <p class="stat-caption">Code snippets shared</p>
+        </article>
+      </div>
+
+      <div class="content-grid">
+        <section class="panel repositories-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">BUILT WITH CODE</p>
+              <h2>Top repositories</h2>
+            </div>
+            <span id="repoBadge" class="count-badge">0 shown</span>
+          </div>
+
+          <div id="repositories" class="repo-grid"></div>
+          <p id="repoNote" class="small-note"></p>
+        </section>
+
+        <aside class="panel activity-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">LATEST UPDATES</p>
+              <h2>Recent activity</h2>
+            </div>
+            <span class="live-indicator">
+              <span class="status-dot"></span> Public
+            </span>
+          </div>
+
+          <div id="activity" class="activity-list"></div>
+          <p class="small-note">
+            Based on the public events returned by GitHub's API,
+            not a complete contribution history.
+          </p>
+        </aside>
+      </div>
+
+      <footer class="results-footer">
+        <span>Insights powered by the GitHub REST API</span>
+        <a id="allReposLink" href="#" target="_blank"
+          rel="noopener noreferrer">Explore all repositories ↗</a>
+      </footer>
+    </section>
+
+    <footer class="page-footer">
+      <p>Built for curious minds and the people who build the web.</p>
+      <p>DEVLENS <span>·</span> EXPLORE. DISCOVER. BUILD.</p>
+    </footer>
+  </main>
 </body>
 </html>
